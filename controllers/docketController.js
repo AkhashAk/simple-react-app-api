@@ -23,6 +23,25 @@ const createDocket = async (req, res) => {
       }
 }
 
+const updateDocket = async (req, res) => {
+  try {
+    const { body: { _id } } = req;
+    const retrivedUser = await Docket.find({ _id : req.body._id });
+    if (!retrivedUser) {
+      throw {
+        status: 404,
+        message: `PO doesn't exist`,
+      };
+    }
+    const updatedDocket = await Docket.findOneAndUpdate({ _id: _id }, req.body, {new: true} );
+    res.send(updatedDocket);
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+}
+
 const deleteDocket = async (req, res) => {
     try {
         const { body: { id } } = req;
@@ -45,5 +64,6 @@ const deleteDocket = async (req, res) => {
 module.exports = {
     getAllDockets,
     createDocket,
+    updateDocket,
     deleteDocket
 }
